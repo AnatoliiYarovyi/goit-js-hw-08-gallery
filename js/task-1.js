@@ -3,10 +3,19 @@ import galleryImg from './gallery-items.js';
 const refs = {
   listGallery: document.querySelector('.js-gallery'),
   backdrop: document.querySelector('.js-lightbox'),
+  overlay: document.querySelector('.lightbox__overlay'),
   modalImg: document.querySelector('.lightbox__image'),
   btnCls: document.querySelector('button[data-action="close-lightbox"]'),
 };
-const createGalleryImg = galleryImg => {
+
+const imgList = galleryImg.map(galleryImg => createGalleryImg(galleryImg));
+refs.listGallery.append(...imgList);
+
+refs.listGallery.addEventListener('click', onItemClick);
+refs.btnCls.addEventListener('click', onCloseModal);
+refs.overlay.addEventListener('click', onBackdropClick);
+
+function createGalleryImg(galleryImg) {
   const itemGallery = document.createElement('li');
   itemGallery.classList.add('gallery__item');
 
@@ -24,13 +33,7 @@ const createGalleryImg = galleryImg => {
   linkGallery.appendChild(imgGallery);
 
   return itemGallery;
-};
-const imgList = galleryImg.map(galleryImg => createGalleryImg(galleryImg));
-refs.listGallery.append(...imgList);
-
-refs.listGallery.addEventListener('click', onItemClick);
-refs.btnCls.addEventListener('click', onCloseModal);
-
+}
 function onItemClick(event) {
   event.preventDefault();
 
@@ -38,16 +41,21 @@ function onItemClick(event) {
     console.log('ne img');
     return;
   }
+  window.addEventListener('keydown', onPressEscape);
+  window.addEventListener('keydown', onArrow); //slider
   refs.backdrop.classList.add('is-open');
-  console.dir(event.target);
-  console.dir(event.target.alt);
-  console.dir(event.target.dataset.sourse);
-
   onImgModal(event.target);
 }
 function onCloseModal() {
+  window.removeEventListener('keydown', onPressEscape);
+  window.removeEventListener('keydown', onArrow); //slider
   refs.backdrop.classList.remove('is-open');
   onCleensImgModal();
+}
+function onBackdropClick(event) {
+  if (event.target === event.currentTarget) {
+    onCloseModal();
+  }
 }
 function onImgModal(img) {
   refs.modalImg.setAttribute('src', img.dataset.sourse);
@@ -56,4 +64,36 @@ function onImgModal(img) {
 function onCleensImgModal() {
   refs.modalImg.setAttribute('src', '');
   refs.modalImg.setAttribute('alt', '');
+}
+function onPressEscape(event) {
+  console.log('event.code:', event.code);
+  if (event.code === 'Escape') {
+    console.log('event.code:', event.code);
+    onCloseModal();
+  }
+}
+
+// -------------------------------- Слайдер -----------------------------
+
+var slides = document.querySelectorAll('.gallery__image');
+var currentSlide = 0;
+
+function onArrow(event) {
+  if (event.code === 'ArrowRight') {
+    nextSlide();
+  } else if (event.code === 'ArrowLeft') {
+    previousSlide();
+  }
+}
+function nextSlide() {
+  return goToSlide(currentSlide + 1);
+}
+
+function previousSlide() {
+  return goToSlide(currentSlide - 1);
+}
+
+function goToSlide(n) {
+  currentSlide = (n + slides.length) % slides.length;
+  onImgModal(slides[currentSlide]);
 }
