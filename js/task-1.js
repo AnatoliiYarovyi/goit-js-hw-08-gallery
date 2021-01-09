@@ -9,6 +9,10 @@ const refs = {
 };
 
 const imgList = galleryImg.map(galleryImg => createGalleryImg(galleryImg));
+imgList.forEach((li, index) => { 
+  let img = li.firstElementChild.firstElementChild
+  img.setAttribute("data-index", index);
+});
 refs.listGallery.append(...imgList);
 
 refs.listGallery.addEventListener('click', onItemClick);
@@ -26,7 +30,7 @@ function createGalleryImg(galleryImg) {
   const imgGallery = document.createElement('img');
   imgGallery.classList.add('gallery__image');
   imgGallery.setAttribute('src', galleryImg.preview);
-  imgGallery.setAttribute('data-sourse', galleryImg.original);
+  imgGallery.setAttribute('data-sourse', galleryImg.original); 
   imgGallery.setAttribute('alt', galleryImg.description);
 
   itemGallery.appendChild(linkGallery);
@@ -42,14 +46,17 @@ function onItemClick(event) {
     return;
   }
   window.addEventListener('keydown', onPressEscape);
-  window.addEventListener('keydown', onArrow); //slider
+  window.addEventListener('keydown', onArrowSlider); //slider
   refs.backdrop.classList.add('is-open');
+
   const imgRef = event.target;
+  currentSlide = imgRef.dataset.index; //slider
+
   onImgModal(imgRef);
 }
 function onCloseModal() {
   window.removeEventListener('keydown', onPressEscape);
-  window.removeEventListener('keydown', onArrow); //slider
+  window.removeEventListener('keydown', onArrowSlider); //slider
   refs.backdrop.classList.remove('is-open');
   onCleensImgModal();
 }
@@ -76,10 +83,10 @@ function onPressEscape(event) {
 
 // -------------------------------- Слайдер -----------------------------
 
-var slides = document.querySelectorAll('.gallery__image');
-var currentSlide = 0;
+let slides = document.querySelectorAll('.gallery__image');
+let currentSlide = 0;
 
-function onArrow(event) {
+function onArrowSlider(event) {
   if (event.code === 'ArrowRight') {
     nextSlide();
   } else if (event.code === 'ArrowLeft') {
@@ -87,11 +94,11 @@ function onArrow(event) {
   }
 }
 function nextSlide() {
-  return goToSlide(currentSlide + 1);
+  goToSlide(currentSlide + 1);
 }
 
 function previousSlide() {
-  return goToSlide(currentSlide - 1);
+  goToSlide(currentSlide - 1);
 }
 
 function goToSlide(n) {
@@ -99,3 +106,5 @@ function goToSlide(n) {
   const imgSlideRef = slides[currentSlide];
   onImgModal(imgSlideRef);
 }
+// -----------------------------------------------------------------------
+
