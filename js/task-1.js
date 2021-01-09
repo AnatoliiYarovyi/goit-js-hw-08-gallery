@@ -44,7 +44,8 @@ function onItemClick(event) {
   window.addEventListener('keydown', onPressEscape);
   window.addEventListener('keydown', onArrow); //slider
   refs.backdrop.classList.add('is-open');
-  onImgModal(event.target);
+  const imgRef = event.target;
+  onImgModal(imgRef);
 }
 function onCloseModal() {
   window.removeEventListener('keydown', onPressEscape);
@@ -57,9 +58,9 @@ function onBackdropClick(event) {
     onCloseModal();
   }
 }
-function onImgModal(img) {
-  refs.modalImg.setAttribute('src', img.dataset.sourse);
-  refs.modalImg.setAttribute('alt', img.alt);
+function onImgModal(imgRef) {
+  refs.modalImg.setAttribute('src', imgRef.dataset.sourse);
+  refs.modalImg.setAttribute('alt', imgRef.alt);
 }
 function onCleensImgModal() {
   refs.modalImg.setAttribute('src', '');
@@ -95,5 +96,6 @@ function previousSlide() {
 
 function goToSlide(n) {
   currentSlide = (n + slides.length) % slides.length;
-  onImgModal(slides[currentSlide]);
+  const imgSlideRef = slides[currentSlide];
+  onImgModal(imgSlideRef);
 }
